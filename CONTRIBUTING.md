@@ -17,8 +17,8 @@ Use made-up item names and placeholder tokens in fixtures.
 You need Node.js 20+.
 
 ```bash
-git clone https://github.com/mohdahmedasif/household-inventory.git
-cd household-inventory
+git clone https://github.com/mohdahmedasif/stocked.git
+cd stocked
 cp .env.example .env
 npm install
 npm run install:all
@@ -29,7 +29,7 @@ Open http://127.0.0.1:5173 (Vite; API on `:3000`).
 
 ## Pull requests
 
-1. Open an issue first for larger changes, or grab a [good first issue](https://github.com/mohdahmedasif/household-inventory/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+1. Open an issue first for larger changes, or grab a [good first issue](https://github.com/mohdahmedasif/stocked/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 2. Keep the diff focused — one problem per PR.
 3. Match the existing TypeScript / Express style. Do not reformat unrelated files.
 4. Describe *why* the change exists, not only what you edited.

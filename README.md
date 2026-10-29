@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/node-%3E%3D22-339933" alt="Node 22+">
   <img src="https://img.shields.io/badge/react-19-61DAFB" alt="React 19">
   <img src="https://img.shields.io/badge/sqlite-local-0f766e" alt="SQLite">
-  <a href="https://github.com/mohdahmedasif/household-inventory/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/badge/good%20first%20issue-welcome-7057ff" alt="Good first issues"></a>
+  <a href="https://github.com/mohdahmedasif/stocked/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/badge/good%20first%20issue-welcome-7057ff" alt="Good first issues"></a>
 </p>
 
 **Self-hosted household pantry** for groceries, medicine and supplies. Track what you own, where it lives, and when it expires — with an optional Gemini photo scan that fills the add form for you.
@@ -44,8 +44,8 @@ In **production / Docker**, Express serves the built SPA and API from one proces
 **Requirements:** Node.js 22+. Optional: a [Gemini API key](https://aistudio.google.com/) for photo extract.
 
 ```bash
-git clone https://github.com/mohdahmedasif/household-inventory.git
-cd household-inventory
+git clone https://github.com/mohdahmedasif/stocked.git
+cd stocked
 cp .env.example .env          # then set ADMIN_KEY (Windows: copy .env.example .env)
 npm install
 npm run install:all
@@ -153,8 +153,8 @@ Rows with the same name + category merge into one product; each row becomes a ba
 ### Docker on a VPS
 
 ```bash
-git clone https://github.com/mohdahmedasif/household-inventory.git
-cd household-inventory
+git clone https://github.com/mohdahmedasif/stocked.git
+cd stocked
 cp .env.example .env   # set ADMIN_KEY
 docker compose up -d --build
 ```

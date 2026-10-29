@@ -10,4 +10,4 @@ Household Inventory stores a Gemini API key (optional) and an inventory API key 
 
 ## Report a vulnerability
 
-Use [GitHub private vulnerability reporting](https://github.com/mohdahmedasif/household-inventory/security/advisories/new) so tokens and inventory details stay off the public issue tracker.
+Use [GitHub private vulnerability reporting](https://github.com/mohdahmedasif/stocked/security/advisories/new) so tokens and inventory details stay off the public issue tracker.
