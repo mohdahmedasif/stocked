@@ -1,10 +1,10 @@
-name: household-inventory
+name: stocked
 
 services:
-  inventory:
+  stocked:
     build: .
-    image: household-inventory:latest
-    container_name: household-inventory-app
+    image: stocked:latest
+    container_name: stocked-app
     ports:
       - "${PORT:-3000}:3000"
     env_file:
@@ -16,9 +16,9 @@ services:
       # .env only chooses the port published on the host (see "ports" above).
       PORT: "3000"
     volumes:
-      - inventory-data:/data
+      - stocked-data:/data
     restart: unless-stopped
 
 volumes:
-  inventory-data:
-    name: household-inventory-data
+  stocked-data:
+    name: stocked-data

@@ -72,7 +72,16 @@ docker compose up -d --build
 Set `ADMIN_KEY` in `.env` first; the first visit asks for it.
 
 - App: **http://127.0.0.1:3000** (or the `PORT` you set)
-- Data: Docker volume `household-inventory-data`
+- Data: Docker volume `stocked-data`
+
+Upgrading a Docker install from before the rename (volume `household-inventory-data`)? Copy the data across once, then start as usual:
+
+```bash
+docker compose -p household-inventory down
+docker volume create stocked-data
+docker run --rm -v household-inventory-data:/from -v stocked-data:/to alpine cp -a /from/. /to/
+docker compose up -d --build
+```
 
 ## Configuration
 
