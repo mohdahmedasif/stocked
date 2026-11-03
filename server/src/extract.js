@@ -117,7 +117,11 @@ function normalizeDraft(raw, catalog, settings) {
 function isOverloaded(err) {
   const status = Number(err?.status);
   if (status === 429 || status === 500 || status === 503) return true;
-  return /UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded/i.test(String(err?.message || ""));
+  // A request that hangs is treated like a busy model: retry, then fall back.
+  if (err?.name === "AbortError" || err?.name === "TimeoutError") return true;
+  return /UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded|timed? ?out|aborted/i.test(
+    String(err?.message || ""),
+  );
 }
 
 // Gemini sheds load with 503/429 during demand spikes: retry the primary
@@ -249,7 +253,7 @@ export async function extractItem({
   for (const entry of apiKeys) {
     try {
       response = await generateWithRetry(
-        new GoogleGenAI({ apiKey: entry.key }),
+        new GoogleGenAI({ apiKey: entry.key, httpOptions: { timeout: config.geminiTimeoutMs } }),
         request,
         settings.gemini_model,
         settings.gemini_fallback_model,

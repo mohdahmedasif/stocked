@@ -10,6 +10,8 @@ export const config = {
   geminiTemperature: 0.2,
   /** Waits between retries of the main model, in milliseconds. */
   geminiRetryDelaysMs: [800, 2000],
+  /** Longest wait for one Gemini request before it counts as overloaded and the fallback is tried. */
+  geminiTimeoutMs: 25000,
   /** Largest product photo accepted by Add Product. */
   maxUploadBytes: 8 * MB,
   /** Photos of one product that can be read together. */
