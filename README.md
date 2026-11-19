@@ -17,17 +17,6 @@
 
 Stocked is a self-hosted tracker for food, medicine and household supplies. Every purchase becomes a batch with its own location and expiry date, so you always know what you have and what to use first. Point your phone at a label and an optional Gemini scan fills in the form for you.
 
-## How adding an item works
-
-```mermaid
-flowchart LR
-    A[📷 Photo of a label] --> B[Gemini reads it]
-    B --> C[Draft fields filled in]
-    C --> D{You review}
-    D -->|looks right| E[Batch saved]
-    D -->|edit| C
-```
-
 ## Features
 
 - **Pantry**: search, filter by category or location, and sort by name, expiry or stock.
