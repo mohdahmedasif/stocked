@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-bookworm-slim AS client
+FROM node:26-bookworm-slim AS client
 WORKDIR /src/client
 COPY client/package.json ./
 RUN npm install
 COPY client/ ./
 RUN npm run build
 
-FROM node:22-bookworm-slim
+FROM node:26-bookworm-slim
 WORKDIR /app
 COPY server/package.json server/.npmrc ./
 RUN npm install --omit=dev
