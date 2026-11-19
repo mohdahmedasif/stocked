@@ -111,7 +111,7 @@ A purchase identical to an existing batch increases that batch's count. Any othe
 
 ## Deployment
 
-**Docker image:** when a change is merged to `main`, [GitHub Actions](.github/workflows/build-deploy.yml) tests it and publishes an image to GitHub Container Registry. On the server, run:
+**Docker image:** the [GitHub Actions workflow](.github/workflows/build-deploy.yml) tests each change, and after a merge to `main` that passes, publishes an image to GitHub Container Registry. On the server, run:
 
 ```bash
 bash scripts/deploy-image.sh

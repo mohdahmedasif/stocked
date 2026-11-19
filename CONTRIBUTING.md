@@ -36,11 +36,11 @@ npm --prefix server test       # server test suite
 npm --prefix client run build  # type-check and build the client
 ```
 
-CI runs the same checks on every pull request.
+CI runs the same checks on pull requests, so they're a useful preview.
 
 ## Pull requests
 
-1. For a larger change, open an issue first so we can agree on the approach.
+1. For a larger change, it helps to open an issue first to discuss the approach.
 2. Keep each PR to one problem.
 3. Follow the style of the surrounding code, and avoid reformatting files you aren't changing.
 4. In the PR description, explain **why** the change is needed, not only what changed.

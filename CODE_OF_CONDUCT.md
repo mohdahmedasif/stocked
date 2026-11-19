@@ -20,7 +20,7 @@ We want Stocked to be a welcoming project for everyone. Contributors and maintai
 
 ## Reporting
 
-Report concerns privately to the maintainer through GitHub, by contacting [@mohdahmedasif](https://github.com/mohdahmedasif). Reports are reviewed and handled confidentially. The maintainer may take action ranging from a warning to removal from the project, depending on severity.
+To raise a concern, contact the maintainer through GitHub at [@mohdahmedasif](https://github.com/mohdahmedasif). The maintainer will decide what response, if any, is appropriate.
 
 ## Attribution
 

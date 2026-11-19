@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Stocked is maintained on the `main` branch. Security fixes go to `main` and are published as a new Docker image. Older builds are not patched.
+Stocked is developed on the `main` branch. Security fixes are made there on a best-effort basis. Older builds may not receive a fix.
 
 ## What is sensitive
 
@@ -19,7 +19,7 @@ Treat each of these like a password.
 
 Please **do not** open a public issue for a security problem.
 
-Report it privately through [GitHub private vulnerability reporting](https://github.com/mohdahmedasif/stocked/security/advisories/new). Include:
+If you can, report it privately through [GitHub private vulnerability reporting](https://github.com/mohdahmedasif/stocked/security/advisories/new). Include:
 
 - A description of the issue and its impact
 - Steps to reproduce, or a proof of concept
