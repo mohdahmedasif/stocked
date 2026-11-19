@@ -1,24 +1,47 @@
-# Stocked
+<p align="center">
+  <img src="client/public/logo.svg" width="120" alt="Stocked logo">
+</p>
 
-A self-hosted pantry tracker for food, medicine and household supplies. It records what you have, where it is kept and when it expires. An optional Gemini photo scan can fill in the add form from a product label.
+<h1 align="center">Stocked</h1>
+
+<p align="center">
+  <em>Know what's in the pantry, and what's about to expire.</em>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3D6B4F" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/node-%3E%3D22-339933" alt="Node 22 or later">
+  <img src="https://img.shields.io/badge/react-19-61DAFB" alt="React 19">
+  <img src="https://img.shields.io/badge/sqlite-local-0f766e" alt="SQLite">
+</p>
+
+Stocked is a self-hosted tracker for food, medicine and household supplies. Every purchase becomes a batch with its own location and expiry date, so you always know what you have and what to use first. Point your phone at a label and an optional Gemini scan fills in the form for you.
+
+## How adding an item works
+
+```mermaid
+flowchart LR
+    A[📷 Photo of a label] --> B[Gemini reads it]
+    B --> C[Draft fields filled in]
+    C --> D{You review}
+    D -->|looks right| E[Batch saved]
+    D -->|edit| C
+```
 
 ## Features
 
 - **Pantry**: search, filter by category or location, and sort by name, expiry or stock.
-- **Products and batches**: one product can have several purchases. The total on hand is the sum of the batch counts.
-- **Photo add**: take or upload a label photo, and Gemini drafts the fields for you to review.
+- **Products and batches**: one product can have many purchases. The total on hand is the sum of the batch counts.
+- **Photo add**: take or upload label photos, and review what Gemini drafted before saving.
 - **History**: every change to a batch count is logged.
 - **Reports**: a table with CSV export and print.
 - **Catalog**: edit categories, locations, package types and units.
-- **Backup and restore**: export all data to one file and restore it on a new install.
+- **Backup and restore**: export everything to one file and restore it on a new install.
 - **Import**: load an existing Google Sheets CSV.
 
-## Requirements
+## Quick start
 
-- Node.js 22 or later
-- Optional: a [Gemini API key](https://aistudio.google.com/) for photo extraction
-
-## Getting started
+Requires Node.js 22 or later. Photo reading also needs a [Gemini API key](https://aistudio.google.com/).
 
 ```bash
 git clone https://github.com/mohdahmedasif/stocked.git
@@ -29,97 +52,74 @@ npm run install:all
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. In development, Vite serves the UI and proxies `/api` to the Express server on port 3000.
+Open http://127.0.0.1:5173. Vite serves the UI and proxies `/api` to the Express server on port 3000.
 
-To run the production build locally:
+To run the production build locally, use `npm run build` followed by `npm start`, then open http://127.0.0.1:3000.
 
-```bash
-npm run build
-npm start
-```
-
-Then open http://127.0.0.1:3000.
-
-## Docker
+## Run with Docker
 
 ```bash
 cp .env.example .env    # set ADMIN_KEY
 docker compose up -d --build
 ```
 
-The app runs on port 3000 (or the `PORT` you set). Data is kept in the `stocked-data` volume.
+The app runs on port 3000, or the `PORT` you set. Data lives in the `stocked-data` volume.
 
 ## Configuration
 
-Only two environment variables are read from `.env`:
+Two environment variables are read from `.env`:
 
 | Variable | Description |
 |----------|-------------|
 | `PORT` | Port the app listens on. Defaults to `3000`. |
-| `ADMIN_KEY` | Required. Used to pair a browser and to reset a forgotten PIN. |
+| `ADMIN_KEY` | Required. Pairs a new browser and resets a forgotten PIN. |
 
-All other settings, such as expiry windows, the Gemini model, the app name and Gemini API keys, are managed in the app's Settings page. Categories, locations and units are managed in the Catalog.
+Everything else, including expiry windows, the Gemini model, the app name and Gemini keys, is set on the Settings page. Categories, locations and units live in the Catalog.
 
-Gemini API keys are stored encrypted with the `secret.key` file in the data directory. If that file is lost, saved keys must be entered again.
+Gemini keys are encrypted with the `secret.key` file in the data directory. If that file is lost, saved keys must be entered again.
 
 Never commit `.env`, `secret.key`, a database file or a backup file.
 
 ## Access
 
-1. **Pair the device.** A browser must be paired once with the admin key. The pairing lasts a year and is renewed whenever a PIN is entered on that device.
+1. **Pair the device.** A browser is paired once with the admin key. The pairing lasts a year and is renewed each time a PIN is entered on that device.
 2. **Unlock a profile.** Each person has a profile protected by a 4 to 8 digit PIN.
 
-Each profile has its own inventory, history, catalog and settings, stored in a separate database file. Five wrong PINs in a row lock the profile for one minute, and each further wrong attempt extends the lock up to two hours. A forgotten PIN can be reset with the admin key. A lost device can be removed with **Settings → Unpair other devices**.
+Each profile has its own inventory, history, catalog and settings, stored in a separate database file. Five wrong PINs lock the profile for a minute, and further wrong attempts extend the lock up to two hours. A forgotten PIN can be reset with the admin key, and a lost device can be removed under **Settings → Unpair other devices**.
 
-PINs are stored as salted scrypt hashes. Device and session tokens are stored as SHA-256 hashes. The PIN controls access to the app; the database file itself is not encrypted.
+PINs are stored as salted scrypt hashes, and device and session tokens as SHA-256 hashes. The PIN guards the app; the database file itself is not encrypted.
 
-**HTTPS:** run the app behind HTTPS whenever it is reachable from the internet. Over plain HTTP, cookies are sent without the `Secure` flag, so anyone who can observe the network traffic could capture them.
+Run the app behind HTTPS whenever it is reachable from the internet. Without HTTPS, cookies are sent without the `Secure` flag, so anyone who can watch the traffic could capture them.
 
-**Reverse proxies:** the pairing rate limit is per IP address. Behind a proxy, all visitors share one address and therefore one limit.
+## Install as an app
 
-## Installing as an app
+Over HTTPS, or on `localhost`, browsers offer **Install app** or **Add to Home Screen**. Inventory data is never stored on the device, so changes always need the server.
 
-Over HTTPS, or on `localhost`, the app can be installed from the browser's menu (**Install app** or **Add to Home Screen**). Inventory data is never stored on the device, so changes require a connection to the server.
-
-## Data
+## Data model
 
 | Entity | Meaning |
 |--------|---------|
-| Product | An item you stock, matched by name and category |
-| Company | The brand of a purchase |
-| Batch | One purchase, with its count, location, size, expiry and acquired date |
+| **Product** | An item you stock, matched by name and category |
+| **Company** | The brand of a purchase |
+| **Batch** | One purchase, with its count, location, size, expiry and acquired date |
 
-Adding a purchase identical to an existing batch increases that batch's count. Any other purchase creates a new batch.
+A purchase identical to an existing batch increases that batch's count. Any other purchase creates a new batch.
 
-**Backup:** on the Import page, choose **Full backup** to download a JSON file. Restoring it replaces the contents of the current profile. Gemini keys, PINs and paired devices are not included.
+**Backup:** on the Import page, choose **Full backup** to download a JSON file. Restoring it replaces the current profile's contents. Gemini keys, PINs and paired devices are not included.
 
-**Google Sheets import:** export the sheet as CSV, then use the Import page, or run:
-
-```bash
-npm run import:sheet -- path/to/export.csv
-```
-
-Rows with the same name and category are merged into one product, and each row becomes a batch.
+**Google Sheets:** export the sheet as CSV, then use the Import page or run `npm run import:sheet -- path/to/export.csv`. Rows with the same name and category merge into one product, and each row becomes a batch.
 
 ## Deployment
 
-### Docker on a server
-
-Pull the image published by CI, then restart:
+**Docker image:** when a change is merged to `main`, [GitHub Actions](.github/workflows/build-deploy.yml) tests it and publishes an image to GitHub Container Registry. On the server, run:
 
 ```bash
 bash scripts/deploy-image.sh
 ```
 
-The image is built and pushed to GitHub Container Registry by the [build workflow](.github/workflows/build-deploy.yml) when a change is merged to `main`.
+**Build on the server:** `docker compose up -d --build`
 
-To build on the server instead:
-
-```bash
-docker compose up -d --build
-```
-
-### systemd
+**systemd:**
 
 ```bash
 npm run install:all && npm run build
@@ -129,18 +129,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now inventory
 ```
 
-### Updating without Docker
-
-```bash
-bash scripts/deploy.sh
-```
-
-This pulls `main`, installs dependencies, rebuilds the client and restarts the service.
+**Without Docker:** `bash scripts/deploy.sh` pulls `main`, installs dependencies, rebuilds the client and restarts the service.
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). To report a vulnerability, see [SECURITY.md](SECURITY.md).
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE)
+Released under the [MIT License](LICENSE).
