@@ -2,8 +2,10 @@ name: stocked
 
 services:
   stocked:
+    # Built and published to GHCR by .github/workflows/build-deploy.yml.
+    # On the server, scripts/deploy-image.sh pulls it; `build: .` still works locally.
     build: .
-    image: stocked:latest
+    image: ghcr.io/mohdahmedasif/stocked:latest
     container_name: stocked-app
     ports:
       - "${PORT:-3000}:3000"
