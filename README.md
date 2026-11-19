@@ -100,25 +100,35 @@ A purchase identical to an existing batch increases that batch's count. Any othe
 
 ## Deployment
 
-**Docker image:** the [GitHub Actions workflow](.github/workflows/build-deploy.yml) tests each change, and after a merge to `main` that passes, publishes an image to GitHub Container Registry. On the server, run:
+The server never builds the app. GitHub Actions tests each change and, after a merge to `main`, builds a release and attaches `stocked.tar.gz` to it. The server only downloads that file.
+
+**One-time setup on the server** (Node.js 22 required):
 
 ```bash
-bash scripts/deploy-image.sh
-```
-
-**Build on the server:** `docker compose up -d --build`
-
-**systemd:**
-
-```bash
-npm run install:all && npm run build
-sudo cp deploy/inventory.service /etc/systemd/system/inventory.service
-# Edit User= and the paths in the unit file, then:
+sudo mkdir -p /srv/stocked/data
+sudo cp deploy/inventory.service /etc/systemd/system/inventory.service   # set User= to your user
 sudo systemctl daemon-reload
-sudo systemctl enable --now inventory
+sudo systemctl enable inventory
+printf 'ADMIN_KEY=your-long-random-key
+' | sudo tee /srv/stocked/.env >/dev/null
 ```
 
-**Without Docker:** `bash scripts/deploy.sh` pulls `main`, installs dependencies, rebuilds the client and restarts the service.
+Put a reverse proxy with HTTPS in front of port 3000 if the app is reachable from the internet.
+
+**Update to the latest build:**
+
+```bash
+bash scripts/update-release.sh
+```
+
+The script downloads the newest release, unpacks it into `/srv/stocked/releases/<commit>`, switches `/srv/stocked/current` to it, restarts the service and checks `/api/health`. It keeps the three newest builds. Your data and `.env` are never touched.
+
+**Roll back** to an earlier build:
+
+```bash
+ln -sfn /srv/stocked/releases/<commit> /srv/stocked/current.new && sudo mv -T /srv/stocked/current.new /srv/stocked/current
+sudo systemctl restart inventory
+```
 
 ## Contributing
 

@@ -10,8 +10,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT) || 3000;
 // Every interface, so phones on the same network can reach it.
 const HOST = "0.0.0.0";
-// A "data" folder beside the server: <repo>/data normally, /data in the Docker image.
-const DATA_DIR = path.join(ROOT, "..", "data");
+// A "data" folder beside the server (<repo>/data), unless DATA_DIR points somewhere else.
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "..", "data");
 
 const { app } = createApp({
   dataDir: DATA_DIR,

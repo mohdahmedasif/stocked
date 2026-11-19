@@ -1,7 +1,7 @@
-# Tests every push and pull request. A push to main that passes them builds the
-# Docker image and publishes it to GitHub Container Registry. The server never
-# builds: it pulls the image with scripts/deploy-image.sh.
-name: Test and publish image
+# Tests every push and pull request. A passing push to main builds a release:
+# the client is compiled here, production dependencies are installed here, and
+# one tarball is attached to a GitHub release. The server only downloads it.
+name: Test and build release
 
 on:
   push:
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
 
     steps:
@@ -51,46 +51,62 @@ jobs:
         working-directory: client
         run: npm run build
 
-  publish:
+  release:
     needs: test
-    # Only a passing push to main is published; pull requests stop after tests.
+    # Only a passing push to main becomes a release; pull requests stop after tests.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Same OS and Node major as the server, so native modules match.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - name: Check out
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
 
-      - name: Work out image tags
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=sha
+      - name: Build client
+        working-directory: client
+        run: |
+          npm ci
+          npm run build
 
-      - name: Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Reuse layers from earlier runs so unchanged steps are not rebuilt.
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Copy client into server
+        run: node scripts/copy-client-dist.cjs
+
+      - name: Install production server dependencies
+        working-directory: server
+        run: npm ci --omit=dev
+
+      - name: Assemble release
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p stage/server
+          cp -a server/src server/dist server/node_modules server/package.json stage/server/
+          echo "$SHA" > stage/server/BUILD
+          tar -czf stocked.tar.gz -C stage server
+          ls -lh stocked.tar.gz
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          TAG="build-${SHA::7}"
+          gh release create "$TAG" stocked.tar.gz \
+            --title "Build ${SHA::7}" \
+            --notes "Built from commit ${SHA}." \
+            --target "$SHA" \
+            --latest
